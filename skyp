@@ -18,13 +18,22 @@ module Skyp
   end
 
   class CLI < Thor
+    desc 'chats ACCOUNT', 'List chat names for the skype name ACCOUNT'
+    option :all,   :type => :boolean, :aliases => '-a', :desc => 'List all chats'
+    option :limit, :type => :numeric, :aliases => '-l', :desc => 'Only list the latest N chats', :default => 10
+    def chats(account)
+      setup_database(account)
+
+      chats = Chat.order(:activity_timestamp => :desc)
+      chats = chats.limit(options[:limit]) unless options[:all]
+      chats.each do |chat|
+        puts chat.friendlyname
+      end
+    end
+
     desc 'search ACCOUNT CHAT TERM', 'Search TERM in the chatroom CHAT for the skype name ACCOUNT'
     def search(account, chat, term)
-      # Disable STI
-      ActiveRecord::Base.inheritance_column = nil
-
-      database_path = "#{ Dir.home }/Library/Application Support/Skype/#{ account }/main.db"
-      ActiveRecord::Base.establish_connection(adapter: 'sqlite3', encoding: 'utf8', database: database_path)
+      setup_database(account)
 
       chat = Chat.find_by_friendlyname(chat)
 
@@ -32,6 +41,16 @@ module Skyp
       messages.each do |message|
         puts "[#{ message.timestamp }] #{ message.from_dispname }: #{ message.body_xml }"
       end
+    end
+
+    private
+
+    def setup_database(account)
+      # Disable STI
+      ActiveRecord::Base.inheritance_column = nil
+
+      database_path = "#{ Dir.home }/Library/Application Support/Skype/#{ account }/main.db"
+      ActiveRecord::Base.establish_connection(adapter: 'sqlite3', encoding: 'utf8', database: database_path)
     end
   end
 end
