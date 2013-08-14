@@ -18,11 +18,13 @@ module Skyp
   end
 
   class CLI < Thor
-    desc 'chats ACCOUNT', 'List chat names for the skype name ACCOUNT'
+    class_option :account, :type => :string, :desc => 'Set account (Skype Name)'
+
+    desc 'chats', 'List chat names'
     option :all,   :type => :boolean, :aliases => '-a', :desc => 'List all chats'
     option :limit, :type => :numeric, :aliases => '-l', :desc => 'Only list the latest N chats', :default => 10
-    def chats(account)
-      setup_database(account)
+    def chats
+      setup_database(options[:account])
 
       chats = Chat.order(:activity_timestamp => :desc)
       chats = chats.limit(options[:limit]) unless options[:all]
@@ -31,9 +33,9 @@ module Skyp
       end
     end
 
-    desc 'search ACCOUNT CHAT TERM', 'Search TERM in the chatroom CHAT for the skype name ACCOUNT'
-    def search(account, chat, term)
-      setup_database(account)
+    desc 'search CHAT TERM', 'Search TERM in the chatroom CHAT'
+    def search(chat, term)
+      setup_database(options[:account])
 
       chat = Chat.find_by_friendlyname(chat)
 
@@ -46,11 +48,24 @@ module Skyp
     private
 
     def setup_database(account)
+      account ||= default_account
+
       # Disable STI
       ActiveRecord::Base.inheritance_column = nil
 
       database_path = "#{ Dir.home }/Library/Application Support/Skype/#{ account }/main.db"
       ActiveRecord::Base.establish_connection(adapter: 'sqlite3', encoding: 'utf8', database: database_path)
+    end
+
+    def default_account
+      path = "#{ Dir.home }/.skyp"
+
+      unless File.exists?(path)
+        account = ask('Please enter your account (Skype Name):')
+        IO.write(path, account)
+      end
+
+      IO.read(path).chomp
     end
   end
 end

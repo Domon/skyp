@@ -1,4 +1,4 @@
-# Skype Searcher
+# Skyp
 
 ## Usage
 
@@ -6,7 +6,11 @@ List recent chats:
 
     skyp chats
 
-Search `TERM` in the chatroom `CHAT` for the skype name `ACCOUNT`:
+Search `TERM` in the chatroom `CHAT`:
 
-    skyp search ACCOUNT CHAT TERM
+    skyp search CHAT TERM
+
+## Config
+
+Please set your account (Skype Name) in `~./skyp`.
 
