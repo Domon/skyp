@@ -1,5 +1,4 @@
 source 'https://rubygems.org'
 
-gem 'sqlite3',      '~> 1.3.7'
-gem 'activerecord', '~> 4.0.0'
-gem 'thor',         '~> 0.18.1'
+# Specify your gem's dependencies in skyp.gemspec
+gemspec
