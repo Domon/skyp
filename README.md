@@ -8,7 +8,7 @@ List recent chats:
 
 Search `TERM` in the chatroom `CHAT`:
 
-    skyp search CHAT TERM
+    skyp search TERM -c CHAT
 
 ## Config
 

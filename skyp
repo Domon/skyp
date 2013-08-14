@@ -9,12 +9,16 @@ module Skyp
     self.table_name = 'Chats'
 
     has_many :messages, :primary_key => :name, :foreign_key => :chatname
+
+    scope :latest, -> { order(:activity_timestamp => :desc) }
   end
 
   class Message < ActiveRecord::Base
     self.table_name = 'Messages'
 
     belongs_to :chat, :primary_key => :name, :foreign_key => :chatname
+
+    scope :search, ->(term) { where('body_xml like ?', "%#{ term }%").order(:timestamp) }
   end
 
   class CLI < Thor
@@ -26,20 +30,23 @@ module Skyp
     def chats
       setup_database(options[:account])
 
-      chats = Chat.order(:activity_timestamp => :desc)
+      chats = Chat.latest
       chats = chats.limit(options[:limit]) unless options[:all]
       chats.each do |chat|
         puts chat.friendlyname
       end
     end
 
-    desc 'search CHAT TERM', 'Search TERM in the chatroom CHAT'
-    def search(chat, term)
+    desc 'search TERM', 'Search the term TERM'
+    option :chat, :type => :string, :aliases => '-c', :desc => 'Search in the chatroom CHAT'
+    def search(term)
       setup_database(options[:account])
 
-      chat = Chat.find_by_friendlyname(chat)
+      chat = Chat.find_by_friendlyname(options[:chat])
 
-      messages = chat.messages.where('body_xml like ?', "%#{ term }%").order(:timestamp)
+      message_scope = chat.try(:messages) || Message
+
+      messages = message_scope.search(term)
       messages.each do |message|
         puts "[#{ message.timestamp }] #{ message.from_dispname }: #{ message.body_xml }"
       end
