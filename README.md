@@ -2,5 +2,7 @@
 
 ## Usage
 
-    ruby skype_searcher.rb [skype name] [chat name] [search term]
+Search `TERM` in the chatroom `CHAT` for the skype name `ACCOUNT`:
+
+    skyp search ACCOUNT CHAT TERM
 

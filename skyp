@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+
+require 'sqlite3'
+require 'active_record'
+require 'thor'
+
+module Skyp
+  class Chat < ActiveRecord::Base
+    self.table_name = 'Chats'
+
+    has_many :messages, :primary_key => :name, :foreign_key => :chatname
+  end
+
+  class Message < ActiveRecord::Base
+    self.table_name = 'Messages'
+
+    belongs_to :chat, :primary_key => :name, :foreign_key => :chatname
+  end
+
+  class CLI < Thor
+    desc 'search ACCOUNT CHAT TERM', 'Search TERM in the chatroom CHAT for the skype name ACCOUNT'
+    def search(account, chat, term)
+      # Disable STI
+      ActiveRecord::Base.inheritance_column = nil
+
+      database_path = "#{ Dir.home }/Library/Application Support/Skype/#{ account }/main.db"
+      ActiveRecord::Base.establish_connection(adapter: 'sqlite3', encoding: 'utf8', database: database_path)
+
+      chat = Chat.find_by_friendlyname(chat)
+
+      messages = chat.messages.where('body_xml like ?', "%#{ term }%").order(:timestamp)
+      messages.each do |message|
+        puts "[#{ message.timestamp }] #{ message.from_dispname }: #{ message.body_xml }"
+      end
+    end
+  end
+end
+
+Skyp::CLI.start(ARGV)
+
