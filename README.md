@@ -51,3 +51,5 @@ Currently Skyp only works on Mac.
 
 Copyright (c) 2013 Chun-wei Kuo. See [LICENSE][] for details.
 
+[LICENSE]: LICENSE
+
