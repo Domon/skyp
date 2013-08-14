@@ -48,7 +48,8 @@ module Skyp
 
       messages = message_scope.search(term)
       messages.each do |message|
-        puts "[#{ message.timestamp }] #{ message.from_dispname }: #{ message.body_xml }"
+        time = Time.at(message.timestamp)
+        puts "[#{ time }] #{ message.from_dispname }: #{ message.body_xml }"
       end
     end
 
