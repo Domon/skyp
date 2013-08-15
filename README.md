@@ -31,7 +31,7 @@ Search `TERM` in the chatroom `CHAT`:
 
 ## Config
 
-Please set your account (Skype Name) in `~./skyp`.
+Please set your account (Skype Name) in `~/.skyp`.
 
 
 ## Platforms
