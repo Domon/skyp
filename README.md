@@ -1,5 +1,13 @@
 # Skyp
 
+[![Gem Version](https://badge.fury.io/rb/skyp.png)][gem]
+[![Dependency Status](https://gemnasium.com/Domon/skyp.png)][gemnasium]
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/Domon/skyp/trend.png)][bitdeli]
+
+[gem]: http://badge.fury.io/rb/skyp
+[gemnasium]: https://gemnasium.com/Domon/skyp
+[bitdeli]: https://bitdeli.com/free "Bitdeli Badge"
+
 A command-line tool to search Skype history.
 
 
